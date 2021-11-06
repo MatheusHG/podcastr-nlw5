@@ -60,10 +60,27 @@ export default function Episode({ episode }: EpisodeProps) {
   )
 }
 
+// Mandatory
 export const getStaticPaths: GetStaticPaths = async () => {
+  const { data } = await api.get('episodes', {
+    params: {
+      _limit: 2,
+      _sort: 'published_at',
+      _order: 'desc'
+    }
+  });
+
+  const paths = data.map(episode => {
+    return {
+      params: {
+        slug: episode.id
+      }
+    }
+  });
+
   return {
-    paths: [],
-    fallback: 'blocking'
+    paths, // fazer o pre-recarregamento das 2 primeiras paginas, as outras serão carregadas quando alguem abrir - indicado para ecommerce. Caso contrário, deixaria apenas path: [],
+    fallback: 'blocking' // Só entrega se a página estiver pronta
   }
 }
 
